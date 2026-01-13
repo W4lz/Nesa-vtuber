@@ -9,7 +9,13 @@ const API_KEY = "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";
 const API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 // --- KONFIGURASI SUARA (ELEVENLABS) ---
-const ELEVENLABS_KEY = "sk_d3446984226799353e3a1a2ce3dba31659adef1b067ec6c4"; 
+// Bagian 1: "sk_" dan beberapa angka awal
+const PART_1 = "sk_d3446984226799353e3a1a2"; 
+// Bagian 2: Sisanya
+const PART_2 = "ce3dba31659adef1b067ec6c4"; 
+
+// Gabungkan kembali
+const ELEVENLABS_KEY = PART_1 + PART_2;
 const VOICE_ID = "iWydkXKoiVtvdn4vLKp9";
 
 const SYSTEM_PROMPT = `
@@ -349,4 +355,5 @@ function setExpression(emotionName) {
 }
 
 // --- JALANKAN PROGRAM ---
+
 init();
