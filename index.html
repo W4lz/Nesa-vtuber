@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vtuber Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+                "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3/lib/three-vrm.module.js"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="header">
+        <h1>AI Vtuber Assistant</h1>
+        <h2 id="sub-header">introducing Nesa</h2>
+
+    <div id="canvas-container"></div>
+
+    <div class="side-panel left-panel">
+        <div class="panel-header">
+            <h3>Model Statistic</h3>
+        </div>
+
+        <div class="panel-content">
+            <p><strong>Nama:</strong> Nesa</p> <p><strong>Model:</strong> Llama 3.3</p>
+            <p><strong>Status:</strong> <span style="color: #00ff00;">● Online</span></p>
+            <p><strong>Suara:</strong> Aktif 🔊</p>
+            <hr style="border-color: rgba(255,255,255,0.2);">
+        </div>
+    </div>
+
+    <div class="side-panel right-panel">
+        <div class="panel-header">
+            <h3>User Guide AI Assistant</h3>
+        </div>
+        <div class="panel-content">
+            <ul>
+                <li><strong>Chat:</strong> Ketik pesan di bawah lalu tekan Enter.</li>
+                <li><strong>Suara:</strong> Pastikan volume komputermu nyala.</li>
+                <li><strong>Interaksi:</strong>
+                    <br>- Gerakkan mouse untuk melihat sekitar.
+                    <br>- AI akan menatap kursor dan berkedip.
+                </li>
+                <li><strong>Emosi:</strong> Coba puji atau ejek dia untuk lihat ekspresi!</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="chat-interface">
+        <div id="chat-history"></div>
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Ketik pesan disini...">
+            <button id="send-btn">Kirim</button>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

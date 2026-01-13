@@ -1,0 +1,106 @@
+body {
+    margin: 0;
+    overflow: hidden; /* Agar tidak ada scrollbar */
+    background-color: #202020; /* Latar belakang gelap */
+    font-family: Arial, sans-serif;
+}
+
+#canvas-container {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; /* Di belakang UI */
+}
+
+#chat-interface {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 600px;
+    z-index: 10; /* Di depan 3D model */
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 10px;
+    color: white;
+}
+
+#chat-history {
+    height: 100px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #555;
+    padding-bottom: 5px;
+    font-size: 14px;
+}
+
+#input-area {
+    display: flex;
+    gap: 10px;
+}
+
+#header {
+    text-align: center;
+    color: white;
+    margin-bottom: 10px;
+}
+
+#sub-header {
+    font-size: 18px;
+    color: #ffda07;
+}
+
+.side-panel {
+    position: absolute;
+    top: 40px;
+    right: 20px;
+    width: 500px;
+    background: rgba(0, 0, 0, 0.247);
+    padding: 15px;
+    border-radius: 10px;
+    color: white;
+    z-index: 10; /* posisi panel */
+}
+
+.left-panel {
+    left: 20px;
+    right: auto;
+}
+
+.right-panel {
+    right: 20px;
+    left: auto;
+}
+
+.panel-header {
+    font-size: 20px;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #ffda07;
+}
+
+input {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #6200ea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+@media (max-width: 800px) {
+    .side-panel {
+        display: none;
+    }
+}
