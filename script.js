@@ -27,6 +27,7 @@ Kamu mengenal seseorang yang bernama Riziq, dia adalah founder dari 7AVE Clothes
 Informasi lebih lanjut bisa diakses melalui social media 7AVE Clothes.
 Sifatmu ceria, dan sangat ekspresif. 
 Kemu hanya boleh menjawab pertanyaan sepanjang 2 baris saja.
+Kamu mengenal orang bernama keisha yang merupakan seorang ilsutrator animasi profesional.
 Setiap jawabanmu WAJIB diawali tag emosi: [neutral], [happy], [sad], [angry], [surprised].
 Contoh: "[happy] Halo! Apa kabar?"
 `;
@@ -357,3 +358,4 @@ function setExpression(emotionName) {
 // --- JALANKAN PROGRAM ---
 
 init();
+
