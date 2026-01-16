@@ -1,106 +1,149 @@
 body {
     margin: 0;
-    overflow: hidden; /* Agar tidak ada scrollbar */
-    background-color: #202020; /* Latar belakang gelap */
-    font-family: Arial, sans-serif;
+    height: 100vh; /* Tinggi layar penuh */
+    background-color: #1a1a1a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden; /* Hilangkan scrollbar window utama */
 }
 
-#canvas-container {
+/* --- LAYOUT UTAMA (Split Screen) --- */
+#main-layout {
+    display: flex;
     width: 100vw;
     height: 100vh;
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1; /* Di belakang UI */
 }
 
-#chat-interface {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    max-width: 600px;
-    z-index: 10; /* Di depan 3D model */
-    background: rgba(0, 0, 0, 0.7);
-    padding: 15px;
-    border-radius: 10px;
+/* --- KOLOM KIRI (Chat UI) --- */
+#left-column {
+    width: 400px; /* Lebar panel chat */
+    min-width: 300px;
+    background-color: #202020; /* Warna panel chat */
+    border-right: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    flex-direction: column; /* Susun ke bawah */
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 10;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+}
+
+/* Header di dalam kolom kiri */
+#chat-header {
+    text-align: center;
     color: white;
-}
-
-#chat-history {
-    height: 100px;
-    overflow-y: auto;
     margin-bottom: 10px;
-    border-bottom: 1px solid #555;
-    padding-bottom: 5px;
-    font-size: 14px;
+}
+#chat-header h2 { margin: 0; font-size: 24px; }
+#chat-header p { margin: 5px 0 0 0; font-size: 13px; opacity: 0.7; }
+
+/* Area Riwayat Chat */
+#chat-history {
+    flex-grow: 1; /* Mengisi ruang kosong vertikal */
+    overflow-y: auto;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+    
+    /* Scrollbar Modern */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.2) transparent;
 }
 
+/* Input Area */
 #input-area {
     display: flex;
     gap: 10px;
-}
-
-#header {
-    text-align: center;
-    color: white;
-    margin-bottom: 10px;
-}
-
-#sub-header {
-    font-size: 18px;
-    color: #ffda07;
-}
-
-.side-panel {
-    position: absolute;
-    top: 40px;
-    right: 20px;
-    width: 500px;
-    background: rgba(0, 0, 0, 0.247);
-    padding: 15px;
-    border-radius: 10px;
-    color: white;
-    z-index: 10; /* posisi panel */
-}
-
-.left-panel {
-    left: 20px;
-    right: auto;
-}
-
-.right-panel {
-    right: 20px;
-    left: auto;
-}
-
-.panel-header {
-    font-size: 20px;
-    margin-bottom: 10px;
-    text-align: center;
-    color: #ffda07;
-}
-
-input {
-    flex-grow: 1;
+    background: rgba(255, 255, 255, 0.05);
     padding: 10px;
-    border-radius: 5px;
-    border: none;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
-button {
-    padding: 10px 20px;
-    background-color: #6200ea;
+#user-input {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+    font-size: 14px;
+}
+
+#send-btn {
+    background: #6200ea;
     color: white;
     border: none;
-    border-radius: 5px;
+    padding: 8px 20px;
+    border-radius: 10px;
     cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+#send-btn:hover { background: #7c4dff; }
+
+/* --- KOLOM KANAN (3D Canvas) --- */
+#right-column {
+    flex-grow: 1; /* Ambil sisa lebar layar */
+    height: 100%;
+    position: relative;
+    background: radial-gradient(circle at center, #2b2b2b 0%, #151515 100%); /* Latar belakang 3D */
 }
 
-@media (max-width: 800px) {
-    .side-panel {
-        display: none;
-    }
+#canvas-container {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* --- BUBBLE CHAT STYLE --- */
+.chat-bubble {
+    padding: 12px 16px;
+    border-radius: 12px;
+    max-width: 85%;
+    font-size: 14px;
+    line-height: 1.5;
+    position: relative;
+    word-wrap: break-word;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: left;
+}
+
+/* User Bubble (Kanan) */
+.user-msg {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #6200ea, #7c4dff);
+    color: white;
+    border-bottom-right-radius: 2px;
+}
+
+/* Bot Bubble (Kiri) */
+.bot-msg {
+    align-self: flex-start;
+    background: #333333;
+    color: #e0e0e0;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-bottom-left-radius: 2px;
+}
+
+.sender-name {
+    font-size: 11px;
+    margin-bottom: 4px;
+    opacity: 0.6;
+    display: block;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.9) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Responsif untuk HP (Tumpuk ke bawah) */
+@media (max-width: 768px) {
+    #main-layout { flex-direction: column-reverse; }
+    #left-column { width: 100%; height: 50%; }
+    #right-column { height: 50%; }
 }
