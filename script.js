@@ -9,12 +9,8 @@ const API_KEY = "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";
 const API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 // --- KONFIGURASI SUARA (ELEVENLABS) ---
-// Bagian 1: "sk_" dan beberapa angka awal
 const PART_1 = "sk_d3446984226799353e3a1a2"; 
-// Bagian 2: Sisanya
 const PART_2 = "ce3dba31659adef1b067ec6c4"; 
-
-// Gabungkan kembali
 const ELEVENLABS_KEY = PART_1 + PART_2;
 const VOICE_ID = "iWydkXKoiVtvdn4vLKp9";
 
@@ -58,13 +54,21 @@ const chatHistory = document.getElementById('chat-history');
 function init() {
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 20);
+    // --- UPDATE: Menggunakan ukuran Kolom Kanan ---
+    const container = document.getElementById('right-column');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    camera = new THREE.PerspectiveCamera(30, width / height, 0.1, 20);
     camera.position.set(0.0, 1.4, 1.5); 
 
     renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio);
+    
+    // Masukkan canvas ke dalam div container
     document.getElementById('canvas-container').appendChild(renderer.domElement);
+    // ----------------------------------------------
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
     directionalLight.position.set(1.0, 1.0, 1.0).normalize();
@@ -73,7 +77,7 @@ function init() {
     loadAvatar();
     setupChatInteraction();
     
-    // Event Mouse untuk gerakin badan
+    // Event Mouse (Tetap window agar bisa detect mouse dimanapun)
     window.addEventListener('mousemove', (e) => {
         const x = (e.clientX / window.innerWidth) * 2 - 1;
         const y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -101,10 +105,7 @@ function loadAvatar() {
             currentVrm = vrm;
             
             VRMUtils.rotateVRM0(vrm); 
-            
-            // Panggil fungsi pose santai
             setRelaxedPose(vrm); 
-            
             console.log("Avatar berhasil dimuat!");
         },
         (progress) => console.log('Loading...'),
@@ -156,20 +157,16 @@ function animate() {
 }
 
 // ==========================================
-// 6. SUARA UTAMA (ELEVENLABS)
+// 6. SUARA & INTERAKSI
 // ==========================================
 async function speak(text) {
-    // Jika Key ElevenLabs kosong, pakai suara browser
     if (!ELEVENLABS_KEY) {
         console.warn("ElevenLabs Key kosong, menggunakan fallback browser.");
         speakBrowserDefault(text); 
         return;
     }
-
     try {
         console.log("Meminta suara ke ElevenLabs...");
-        
-        // 1. Request ke API ElevenLabs
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
             method: 'POST',
             headers: {
@@ -178,11 +175,8 @@ async function speak(text) {
             },
             body: JSON.stringify({
                 text: text,
-                model_id: "eleven_multilingual_v2", // Model support Bahasa Indonesia bagus
-                voice_settings: {
-                    stability: 0.5,
-                    similarity_boost: 0.7
-                }
+                model_id: "eleven_multilingual_v2", 
+                voice_settings: { stability: 0.5, similarity_boost: 0.7 }
             })
         });
 
@@ -191,29 +185,23 @@ async function speak(text) {
             throw new Error(JSON.stringify(errorData));
         }
 
-        // 2. Mainkan Audio Blob
         const audioBlob = await response.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
 
         audio.play();
         isSpeaking = true;
-
         audio.onended = () => {
             isSpeaking = false;
             if (currentVrm) currentVrm.expressionManager.setValue('aa', 0);
         };
 
     } catch (error) {
-        console.error("Gagal ElevenLabs (Mungkin kuota habis/Error):", error);
-        // Fallback ke suara browser jika gagal
+        console.error("Gagal ElevenLabs, fallback ke browser:", error);
         speakBrowserDefault(text); 
     }
 }
 
-// ==========================================
-// 7. SUARA CADANGAN (BROWSER DEFAULT)
-// ==========================================
 function speakBrowserDefault(text) {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
@@ -236,14 +224,16 @@ function speakBrowserDefault(text) {
     window.speechSynthesis.speak(utterance);
 }
 
-// ==========================================
-// 8. FUNGSI LAINNYA & LOGIC CHAT
-// ==========================================
-
+// --- UPDATE FUNGSI RESIZE ---
 function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    // Update berdasarkan container, bukan window
+    const container = document.getElementById('right-column');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(width, height);
 }
 
 function setRelaxedPose(vrm) {
@@ -278,7 +268,6 @@ async function handleChat() {
         let emotion = "neutral";
         let cleanText = rawResponse;
         
-        // Parsing Tag Emosi [happy], [sad], dll
         const match = rawResponse.match(/\[(.*?)\]/);
         if (match) {
             emotion = match[1].toLowerCase();
@@ -287,8 +276,6 @@ async function handleChat() {
         
         setExpression(emotion);
         addChatBubble("Nesa", cleanText);
-        
-        // Panggil fungsi Speak (ElevenLabs -> Fallback Browser)
         speak(cleanText);
 
     } catch (error) {
@@ -325,17 +312,30 @@ function generateDummyResponse(input) {
 }
 
 function addChatBubble(sender, text) {
-    const p = document.createElement('div');
-    p.innerHTML = `<strong>${sender}:</strong> ${text}`;
-    p.style.marginBottom = "8px";
-    chatHistory.appendChild(p);
-    chatHistory.scrollTop = chatHistory.scrollHeight;
+    const chatContainer = document.getElementById('chat-history');
+    
+    const bubble = document.createElement('div');
+    bubble.classList.add('chat-bubble');
+
+    if (sender === "You") {
+        bubble.classList.add('user-msg');
+    } else {
+        bubble.classList.add('bot-msg');
+    }
+
+    const nameTag = sender === "You" ? "Anda" : "Nesa";
+    
+    bubble.innerHTML = `
+        <span class="sender-name">${nameTag}</span>
+        ${text}
+    `;
+
+    chatContainer.appendChild(bubble);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
 function setExpression(emotionName) {
     if (!currentVrm) return;
-
-    // 1. Reset semua ekspresi lama (termasuk happy/angry kalau ada sisa)
     const emotions = ['happy', 'sad', 'angry', 'surprised', 'neutral', 'blink']; 
     emotions.forEach(e => {
         if (currentVrm.expressionManager.getExpression(e)) {
@@ -343,20 +343,14 @@ function setExpression(emotionName) {
         }
     });
 
-    // 2. FILTER: Jika AI minta happy atau angry, ganti jadi neutral
     if (emotionName === 'happy' || emotionName === 'angry') {
-        console.log("Ekspresi diblokir, mengubah ke neutral.");
         emotionName = 'neutral';
     }
 
-    // 3. Terapkan ekspresi (Hanya Sad, Surprised, atau Neutral)
     if (emotionName !== 'neutral' && currentVrm.expressionManager.getExpression(emotionName)) {
         currentVrm.expressionManager.setValue(emotionName, 1.0);
     }
 }
 
 // --- JALANKAN PROGRAM ---
-
 init();
-
-
